@@ -1,0 +1,25 @@
+>> copy counter.sv and counter_tb.cpp from task1 to task2 folder
+
+>> make or copy a file called Vbuddy.cfg which contains the address of the port used to connect Vbuddy to it
+    to find which port Vbuddy is connected to got to Device Manager > ports > COM#
+    the # is the number of port Vbuddy is connected to
+    then write in the Vbuddy.cfg:
+    /dev/ttyS#
+    where # is the number of the port
+
+>> modified the testbench and compiled and tested to show a 7-segment display counting up only
+
+>> used the vbdFlag(); function to toggle the value of en. If the flag is up, en counts up (en = 1), if down, counter stops counting (en = 0)
+
+>> instead of 7-seg display, plotted the number using a plot function, this is more useful since it is much faster than the 7-seg display
+vbdPlot(int(top->count), 0, 255);
+
+>> CHALLENGE: en should control the direction of counting, 1 counts up, 0 counts down.
+    Done this by first inplementing the flag fuction to toggle the value of en, this is all done in the testbench
+    Then change the sv code to count down when rst and en are unasserted.
+    This is how it is implemented:
+
+    always_ff @ (posedge clk)
+    if(rst)                 count <= {WIDTH{1'b0}};                                     // when reset is asserted output signal count is receiving the value of 0
+    else if(en)             count <= count + {{WIDTH-1{1'b0}}, en};              // if reset is not asserted output is the current value of count plus one; this shows that the value of count is saved in the register and then passed to an adder 
+    else if(!en)            count <= count - {{WIDTH-1{1'b0}}, 1'b1};     // when en and rst are unasserted, count down

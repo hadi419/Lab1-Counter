@@ -1,0 +1,55 @@
+NOTES:
+
+>> Design is on Register Tansfer Level (RTL)
+
+>> Verilator: software that simulates SV design 
+
+>> Verilator not event driven, only takes 0 or 1 as logic levels, does not detect glitches
+
+>> Event Driven: 
+    change in input signal > event created in event queue > event causes more signals to change > more events created > event propogated and evaluated > no events remaining > end of simulation
+    Ads: 
+    > model timing through gates 
+    > signal levels can take various values
+
+>> Verilator is cycle by cycle sim: circuit states are evaluated once in a clock cycle
+
+>> cycle by cycle: no timing info > suitable for functional verification
+    properties:
+    > cannot detect glitches
+    > signals take only two values
+    > unknown, High impedance, floating signal values not available
+
+>> High Impedance Digital Signal (HIDS): output of the signal state in which signal is not driven.
+    > Signals left open so other output pins drive the signal
+    > Also called High-Z
+
+>> Why Verilator? 
+    > fast for checking circuit functionality at rtl 
+    > new DC are clocked so verilator better
+    > only acceps synthesizable code 
+
+>> Why so Fast?
+    > turns the code into c++ > uses the efficient compiler > produce executable
+
+>> Why testbench in Verilator?
+    To ckeck that the DUT works, you need a wrapper program
+    > What does wrapper program do?
+    1) Instantiate the DUT
+    2) Provide input signal at correct time
+    3) displays or compares the output
+
+Task1: Simulating a basic 8-bit binary counter
+
+All looks fine until deep dive.
+what each file means in obj_dir?
+
+TEST YOURSELF CHALLENGES:
+
+1. enable is also clocked so its value changes on the rising edge of the clock, but also other signals change on the rising edge of the clock.
+    When clock ticks, on the rising edge of the clock, en changes its value if it is set to do so, other signals will do the same but the previous value of en is passed through for evaluation of other signals.
+    Hence the value of en should change one clock cycle before the intended change.
+    In the testbench it is set to change at i = 8 from 1 to 0, but we wanted to change after the value is 9. This change happens at exactly rising edge of the clock so set up time and hold time are not considered. This will pass the previous value of en which was 1. Hence the value of count is still incremented. 
+    Similarly, we want the value of 9 to hold for 3 clock cycles which means we want the incrementation to happen at i = 11, so we apply the changes at one clock cycle in advance at i = 10, since for the 10th clock cycle(starting at 0) 
+
+2. This is done by adding   posedge rst     to the sensitivity list. This resets the the count for the next rising edge of the clock tick. But for half clock cycle the value of the counter is incremented then goes to zero. This is because SV does not count for the timing delays and will pick the previous value of reset and en.
