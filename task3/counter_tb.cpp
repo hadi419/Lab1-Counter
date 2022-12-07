@@ -25,7 +25,7 @@ int main(int argc, char **argv, char **env){    // for all testbenches this is t
     top->clk = 1;
     top->rst = 1;
     top->ld = 0;        // inittially do not load
-    top->v = vbdValue();
+    //top->v = vbdValue();
 
     // run simulation for many clock cycles: this for loop is where the simulation happens and controls how many clock cycles the simulation runs
     for (i = 0; i < 300; i++){
@@ -47,7 +47,7 @@ int main(int argc, char **argv, char **env){    // for all testbenches this is t
         // ---- end of Vbuddy output section
 
         // change inittial stimuli
-        top->v = vbdValue();
+        //top->v = vbdValue();
         top->rst = (i < 2) | (i == 15);     // reset the counter to 0 on the clock cycle numbered 15(16th clock cycle since i starts at 0) and stay reset for two clock cycles 0 and 1
         top->ld = vbdFlag();                // counts up when the flag is up and counts down when the flag is down using the push button
         if(Verilated::gotFinish())  exit(0);

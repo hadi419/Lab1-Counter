@@ -11,6 +11,6 @@ module counter #(
 
 always_ff @ (posedge clk)
     if (rst)        count <= {WIDTH{1'b0}};
-    else            count <= ld ? v : count + {{WIDTH-1{1'b0}}, 1'b1};
+    else            count <= ld ? count + {{WIDTH-1{1'b0}}, 1'b1} : count;      // when load is asserted increment the count by 1, otherwise return the current value of the count
 
 endmodule

@@ -20,4 +20,9 @@ IMPORTANT NOTES FOR THIS LAB:
 >> modified the testbench further:
     > everytime you change the stimuli you need to make sure the preloaded value is assigned to value, do this first when changing the stimuli
     > then change the value of ld which is either 1 or 0 depending on the position of the flag and whethter I have pressed the button.
-    
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> task 4 is done by modifying the sv code and the testbench
+>> in the sv file, when using the ? mode for ld, when ld is asserted I want to increment the count, and when it is not, I want to return the same count, hence the code below:
+count <= ld ? count + {{WIDTH-1{1'b0}}, 1'b1} : count;
+>> modified the testbench by ignoring all the sections related to v since we dont use it anymore, we are not loading any value into the counter.
