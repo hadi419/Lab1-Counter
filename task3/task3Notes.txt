@@ -1,0 +1,23 @@
+IMPORTANT NOTES FOR THIS LAB:
+>> vbdValue(); funtion returns the stored value on vbuddy, decimal or hexa format
+    > this should be the preloaded value that you wanna load
+
+>> en signal is replaced by the load signal ld
+    > in the code for counter.sv, if ld is asserted, the screen going to show the value to preload v
+
+>> Vbuddy flag modes: toggle or one-shot
+    > toggle means when you press it value of the flag toggles between 1 and 0
+    > one-shot means that when you press it it stays asserted until read, then as soon as it is read it becomes unasserted
+    > function for it is    vbdSetMode(1);  this makes the flag function one-shot
+    default mode is when you have 0 instead of 1 in the vbdSetMode function.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> goal is to change the code such that when ld is asserted, the value v is loaded into the counter as a pre-set value
+>> copied the code for moduke counter
+>> this uses a schematic with two mux's, one for the reset button as switch and one for the load as switch
+>> as soon as you initialised vbuddy you set the one-shot behaviour of the rotary encoder as seen in the testbench using the function vbdSetMode(1). This function is ina way that as soon as the flag register is read it resets to 0
+>> Then initialise the values of the module to whatever you want; here I have set ld to 0 so the counter does not get loaded with the preset value since the start, assigned v with vbdValue() which returs the value preloaded.
+>> modified the testbench further:
+    > everytime you change the stimuli you need to make sure the preloaded value is assigned to value, do this first when changing the stimuli
+    > then change the value of ld which is either 1 or 0 depending on the position of the flag and whethter I have pressed the button.
+    
