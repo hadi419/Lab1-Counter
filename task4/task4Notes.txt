@@ -1,0 +1,26 @@
+>> Goal is to represent the counting process in decimal format unsing a binary to bcd decoder. This requires a new module that will use two sub-modules counter and decoder to first count and then decode the result into BCD in order to present the count in decimal format.
+>> Created a module called top and copied all the code for it(although this code will need some modifications later)
+>> Made a testbench code in c++ using the same framework I used for counter 
+>> modified doit.sh file inorder to match the new files 
+>> coppied the vbuddy.cpp and vbuddy.cfg files to task4 folder
+>> coppied the framework for the basic counter and made some modifications to match the desired output. This was the need to be able to load a number into the counter and continue counting from there.
+
+MODIFICATIONS MADE:
+>> first thing that needed to be modified was the counter.sv file:
+    > input logics are added in order to make the loading using the switch button available.
+    This is done by intorducing new input logics ld and v for the load value while maintaining all the other outputs
+    > Then in the ff statement, use load as a switch for a mux to either load a new value or continue counting as usual depending on the value of en(0 stays the same, 1 counts up)
+
+>> then we have to match the inputs of the counter and the top module:
+    > The input logics of the top module have to be the same as the inputs of the counter module.
+    This is because when declaring a class counter, the inputs have to be linked like shown in the code.
+    This enables the module to behave as we want it, load the number shown on Vbuddy otherwise continue counting.
+
+>> Then most important modification is the testbench:
+    >> Included the header for the top moduel, #include "Vtop.h"
+    >> Instantiating the top module 
+    >> trace file name as top.vcd
+    >> setting the trigger to one-shot mode 
+    >> then initialising all the inputs for the top module which will do the same for the counter
+    >> read the output of top which is bcd to show on display
+    >> changing the initial stimuli as shown in the code

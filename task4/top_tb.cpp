@@ -1,4 +1,4 @@
-#include "Vcounter.h"           // header included for a specific module, notice the way it is written #include "Vmodulename.h"
+#include "Vtop.h"           // header included for a specific module, notice the way it is written #include "Vmodulename.h"
 #include "verilated.h"          // this header included for all testbenches
 #include "verilated_vcd_c.h"    // this header included for all testbenches
 #include "vbuddy.cpp"           // inserting Vbuddy code here
@@ -9,12 +9,12 @@ int main(int argc, char **argv, char **env){    // for all testbenches this is t
 
     Verilated::commandArgs(argc, argv); // include this for all testbenches
     // ini top verilog instance 
-    Vcounter* top = new Vcounter;   // instantiate a counter module 
+    Vtop* top = new Vtop;   // instantiate a counter module 
     // init trace dump
     Verilated::traceEverOn(true);   // turn on signal tracing and dump the signal into a file named counter.vcd
     VerilatedVcdC* tfp = new VerilatedVcdC;
     top->trace (tfp, 99);
-    tfp->open ("counter.vcd");  // make a file named counter.vcd and dump the trace in it 
+    tfp->open ("top.vcd");  // make a file named counter.vcd and dump the trace in it 
 
     // init Vbuddy 
     if (vbdOpen()!=1)   return(-1);     // open and initialise Vbuddy connection. Port path is in vbuddy.cfg
@@ -24,8 +24,9 @@ int main(int argc, char **argv, char **env){    // for all testbenches this is t
     // initialise simulation inputs, these are variables inside the module we created, here the counter has three inputs: clk, rst, en
     top->clk = 1;
     top->rst = 1;
-    top->ld = 0;        // inittially do not load
-    //top->v = vbdValue();
+    top->en = 0;        // inittially do not load
+    top->v = vbdValue();
+    top->ld = 0;
 
     // run simulation for many clock cycles: this for loop is where the simulation happens and controls how many clock cycles the simulation runs
     for (i = 0; i < 300; i++){
@@ -38,18 +39,19 @@ int main(int argc, char **argv, char **env){    // for all testbenches this is t
         }
 
         // ++++ Send count value to Vbuddy
-        vbdHex(4, (int(top->count) >> 16) & 0xF);   //output count values to 7-segment display every cycle
-        vbdHex(3, (int(top->count) >> 8) & 0xF);
-        vbdHex(2, (int(top->count) >> 4) & 0xF);
-        vbdHex(1, int(top->count) & 0xF); 
-        //vbdPlot(int(top->count), 0, 255);         // output is the plot of the numbers 
+        vbdHex(4, (int(top->bcd) >> 16) & 0xF);   //output count values to 7-segment display every cycle
+        vbdHex(3, (int(top->bcd) >> 8) & 0xF);
+        vbdHex(2, (int(top->bcd) >> 4) & 0xF);
+        vbdHex(1, int(top->bcd) & 0xF); 
+        //vbdPlot(int(top->count), 0, 1000);         // output is the plot of the numbers 
         vbdCycle(i+1);
         // ---- end of Vbuddy output section
 
         // change inittial stimuli
-        //top->v = vbdValue();
+        top->v = vbdValue();
         top->rst = (i < 2) | (i == 15);     // reset the counter to 0 on the clock cycle numbered 15(16th clock cycle since i starts at 0) and stay reset for two clock cycles 0 and 1
-        top->ld = vbdFlag();                // counts up when the flag is up and counts down when the flag is down using the push button
+        top->en = (i > 4);                // counts up when the flag is up and counts down when the flag is down using the push button
+        top->ld = vbdFlag();
         if(Verilated::gotFinish())  exit(0);
     }
     vbdClose();     // ++++ House keeping
